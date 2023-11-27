@@ -118,6 +118,8 @@ h1 {
 .editor-link {
   color: rgb(33, 111, 219);
   text-decoration: none;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 .tree-view-output {

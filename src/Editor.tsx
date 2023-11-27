@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import ExampleTheme from "./themes/ExampleTheme";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
@@ -18,12 +18,8 @@ import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { TRANSFORMERS } from "@lexical/markdown";
 import ToolbarPlugin from "./plugins/ToolbarPlugin";
-
-// import TreeViewPlugin from "./plugins/TreeViewPlugin";
-// import ToolbarPlugin from "./plugins/ToolbarPlugin";
-// import ListMaxIndentLevelPlugin from "./plugins/ListMaxIndentLevelPlugin";
-// import CodeHighlightPlugin from "./plugins/CodeHighlightPlugin";
-// import AutoLinkPlugin from "./plugins/AutoLinkPlugin";
+import AutoLinkPlugin from "./plugins/AutoLinkPlugin";
+import FloatingLinkEditorPlugin from "./plugins/FloatingLinkEditorPlugin";
 
 function Placeholder() {
   return <div className="editor-placeholder">Enter some rich text...</div>;
@@ -54,18 +50,32 @@ const editorConfig = {
 };
 
 const Editor = () => {
+  const [floatingAnchorElem, setFloatingAnchorElem] =
+    useState<HTMLDivElement | null>(null);
+  const [isLinkEditMode, setIsLinkEditMode] = useState<boolean>(false);
+
+  const onRef = (_floatingAnchorElem: HTMLDivElement) => {
+    if (_floatingAnchorElem !== null) {
+      setFloatingAnchorElem(_floatingAnchorElem);
+    }
+  };
   return (
     <LexicalComposer initialConfig={editorConfig}>
       <div className="editor-container">
         <ToolbarPlugin />
         <div className="editor-inner">
           <RichTextPlugin
-            contentEditable={<ContentEditable className="editor-input" />}
+            contentEditable={
+              <div ref={onRef}>
+                <ContentEditable className="editor-input" />
+              </div>
+            }
             placeholder={<Placeholder />}
             ErrorBoundary={LexicalErrorBoundary}
           />
           <HistoryPlugin />
           <AutoFocusPlugin />
+          <AutoLinkPlugin />
           <ListPlugin />
           <LinkPlugin />
         </div>
