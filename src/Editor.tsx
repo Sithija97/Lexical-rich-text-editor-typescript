@@ -59,6 +59,7 @@ const Editor = () => {
       setFloatingAnchorElem(_floatingAnchorElem);
     }
   };
+
   return (
     <LexicalComposer initialConfig={editorConfig}>
       <div className="editor-container">
@@ -66,8 +67,10 @@ const Editor = () => {
         <div className="editor-inner">
           <RichTextPlugin
             contentEditable={
-              <div ref={onRef}>
-                <ContentEditable className="editor-input" />
+              <div className="editor-scroller">
+                <div className="editor" ref={onRef}>
+                  <ContentEditable className="editor-input" />
+                </div>
               </div>
             }
             placeholder={<Placeholder />}
@@ -76,6 +79,13 @@ const Editor = () => {
           <HistoryPlugin />
           <AutoFocusPlugin />
           <AutoLinkPlugin />
+          {floatingAnchorElem && (
+            <FloatingLinkEditorPlugin
+              anchorElem={floatingAnchorElem}
+              isLinkEditMode={isLinkEditMode}
+              setIsLinkEditMode={setIsLinkEditMode}
+            />
+          )}
           <ListPlugin />
           <LinkPlugin />
         </div>
