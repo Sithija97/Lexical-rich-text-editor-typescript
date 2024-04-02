@@ -415,6 +415,13 @@
   dependencies:
     "@lexical/utils" "0.9.2"
 
+"@lexical/list@0.14.2":
+  version "0.14.2"
+  resolved "https://registry.yarnpkg.com/@lexical/list/-/list-0.14.2.tgz#b1d70e95e9b6a22f22b47f11ed7b667b1eeacdd2"
+  integrity sha512-74MVHcYtTC5Plj+GGRV08uk9qbI1AaKc37NGLe3T08aVBqzqxXl1qZK9BhrM2mqTVXB98ZnOXkBk+07vke+b0Q==
+  dependencies:
+    "@lexical/utils" "0.14.2"
+
 "@lexical/list@0.9.2":
   version "0.9.2"
   resolved "https://registry.npmjs.org/@lexical/list/-/list-0.9.2.tgz"
@@ -485,10 +492,22 @@
   resolved "https://registry.npmjs.org/@lexical/rich-text/-/rich-text-0.9.2.tgz"
   integrity sha512-5FZQ387MWeb2rOpjkpyQYzsNAggMuo/TimZbPmIotnzXsZ6amjXrWJq2PbsPqXDIOwBVMl9hSf4HHNtJjOsUqw==
 
+"@lexical/selection@0.14.2":
+  version "0.14.2"
+  resolved "https://registry.yarnpkg.com/@lexical/selection/-/selection-0.14.2.tgz#39d6c0db233790eec81125653503e20deadc13a9"
+  integrity sha512-M122XXGEiBgaxEhL63d+su0pPri67/GlFIwGC/j3D0TN4Giyt/j0ToHhqvlIF6TfuXlBusIYbSuJ19ny12lCEg==
+
 "@lexical/selection@0.9.2":
   version "0.9.2"
   resolved "https://registry.npmjs.org/@lexical/selection/-/selection-0.9.2.tgz"
   integrity sha512-3bet1UwwQzpyKTlyotz8vjZyfSFmzMerkHoCA1XtI4eywJX7nUGhhdduA5V3pRU2fRKlXQOUjgtmOKarQbpIVw==
+
+"@lexical/table@0.14.2", "@lexical/table@^0.14.2":
+  version "0.14.2"
+  resolved "https://registry.yarnpkg.com/@lexical/table/-/table-0.14.2.tgz#a28e0e24dfc8c43ac4ccf53dd33c1292969740d6"
+  integrity sha512-iwsZ5AqkM7RGyU38daK0XgpC8DG0TlEqEYsXhOLjCpAERY/+bgfdjxP8YWtUV5eIgHX0yY7FkqCUZUJSEcbUeA==
+  dependencies:
+    "@lexical/utils" "0.14.2"
 
 "@lexical/table@0.9.2":
   version "0.9.2"
@@ -501,6 +520,15 @@
   version "0.9.2"
   resolved "https://registry.npmjs.org/@lexical/text/-/text-0.9.2.tgz"
   integrity sha512-mD9aAOTfewgvpS1P8tMl16cpf4tXHqlxy00NjFZxoH5bQVRRdVCT/Kr7YimD6UVgjPOvlD9s0mKTKoiTm12lXg==
+
+"@lexical/utils@0.14.2":
+  version "0.14.2"
+  resolved "https://registry.yarnpkg.com/@lexical/utils/-/utils-0.14.2.tgz#7ecb2e16f2a395c96be6de0128bcb7de54589872"
+  integrity sha512-IGknsaSyQbBJYKJJrrjNPaZuQPsJmFqGrCmNR6DcQNenWrFnmAliQPFA7HbszwRSxOFTo/BCAsIgXRQob6RjOQ==
+  dependencies:
+    "@lexical/list" "0.14.2"
+    "@lexical/selection" "0.14.2"
+    "@lexical/table" "0.14.2"
 
 "@lexical/utils@0.9.2":
   version "0.9.2"
