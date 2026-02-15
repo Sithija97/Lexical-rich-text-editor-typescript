@@ -9,9 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@lexical/react": "^0.16.0",
-    "@lexical/table": "^0.16.0",
-    "lexical": "^0.16.0",
+    "@lexical/react": "^0.40.0",
+    "@lexical/table": "^0.40.0",
+    "lexical": "^0.40.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

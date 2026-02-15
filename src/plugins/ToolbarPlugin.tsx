@@ -3,21 +3,16 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import {
   $createParagraphNode,
   $getNodeByKey,
-  $getRoot,
   $getSelection,
   $isRangeSelection,
   $isRootOrShadowRoot,
-  $isTextNode,
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
   COMMAND_PRIORITY_CRITICAL,
-  DEPRECATED_$isGridSelection,
   FORMAT_ELEMENT_COMMAND,
   FORMAT_TEXT_COMMAND,
-  INDENT_CONTENT_COMMAND,
   LexicalEditor,
   NodeKey,
-  OUTDENT_CONTENT_COMMAND,
   REDO_COMMAND,
   SELECTION_CHANGE_COMMAND,
   UNDO_COMMAND,
@@ -30,9 +25,7 @@ import {
 } from "@lexical/rich-text";
 import {
   $getSelectionStyleValueForProperty,
-  $isParentElementRTL,
   $patchStyleText,
-  $selectAll,
   $setBlocksType,
 } from "@lexical/selection";
 import {
@@ -53,7 +46,6 @@ import {
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import {
   $findMatchingParent,
-  $getNearestBlockElementAncestorOrThrow,
   $getNearestNodeOfType,
   mergeRegister,
 } from "@lexical/utils";
@@ -76,19 +68,9 @@ const blockTypeToBlockName = {
   quote: "Quote",
 };
 
-function getCodeLanguageOptions(): [string, string][] {
-  const options: [string, string][] = [];
-
-  for (const [lang, friendlyName] of Object.entries(
-    CODE_LANGUAGE_FRIENDLY_NAME_MAP
-  )) {
-    options.push([lang, friendlyName]);
-  }
-
-  return options;
-}
-
-const CODE_LANGUAGE_OPTIONS = getCodeLanguageOptions();
+const CODE_LANGUAGE_OPTIONS: [string, string][] = Object.entries(
+  CODE_LANGUAGE_FRIENDLY_NAME_MAP,
+);
 
 const FONT_FAMILY_OPTIONS: [string, string][] = [
   ["Arial", "Arial"],
@@ -114,8 +96,7 @@ const FONT_SIZE_OPTIONS: [string, string][] = [
 ];
 
 function dropDownActiveClass(active: boolean) {
-  if (active) return "active dropdown-item-active";
-  else return "";
+  return active ? "active dropdown-item-active" : "";
 }
 
 function BlockFormatDropDown({
@@ -130,10 +111,7 @@ function BlockFormatDropDown({
   const formatParagraph = () => {
     editor.update(() => {
       const selection = $getSelection();
-      if (
-        $isRangeSelection(selection) ||
-        DEPRECATED_$isGridSelection(selection)
-      ) {
+      if ($isRangeSelection(selection)) {
         $setBlocksType(selection, () => $createParagraphNode());
       }
     });
@@ -143,10 +121,7 @@ function BlockFormatDropDown({
     if (blockType !== headingSize) {
       editor.update(() => {
         const selection = $getSelection();
-        if (
-          $isRangeSelection(selection) ||
-          DEPRECATED_$isGridSelection(selection)
-        ) {
+        if ($isRangeSelection(selection)) {
           $setBlocksType(selection, () => $createHeadingNode(headingSize));
         }
       });
@@ -181,10 +156,7 @@ function BlockFormatDropDown({
     if (blockType !== "quote") {
       editor.update(() => {
         const selection = $getSelection();
-        if (
-          $isRangeSelection(selection) ||
-          DEPRECATED_$isGridSelection(selection)
-        ) {
+        if ($isRangeSelection(selection)) {
           $setBlocksType(selection, () => $createQuoteNode());
         }
       });
@@ -196,10 +168,7 @@ function BlockFormatDropDown({
       editor.update(() => {
         let selection = $getSelection();
 
-        if (
-          $isRangeSelection(selection) ||
-          DEPRECATED_$isGridSelection(selection)
-        ) {
+        if ($isRangeSelection(selection)) {
           if (selection.isCollapsed()) {
             $setBlocksType(selection, () => $createCodeNode());
           } else {
@@ -316,7 +285,7 @@ function FontDropDown({
         }
       });
     },
-    [editor, style]
+    [editor, style],
   );
 
   const buttonAriaLabel =
@@ -345,9 +314,53 @@ function FontDropDown({
           >
             <span className="text">{text}</span>
           </DropDownItem>
-        )
+        ),
       )}
     </DropDown>
+  );
+}
+
+const IS_APPLE =
+  typeof navigator !== "undefined" &&
+  /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+
+const ALIGNMENT_OPTIONS: {
+  value: "left" | "center" | "right" | "justify";
+  icon: string;
+  label: string;
+}[] = [
+  { value: "left", icon: "left-align", label: "Left Align" },
+  { value: "center", icon: "center-align", label: "Center Align" },
+  { value: "right", icon: "right-align", label: "Right Align" },
+  { value: "justify", icon: "justify-align", label: "Justify Align" },
+];
+
+function ToolbarButton({
+  disabled,
+  onClick,
+  isActive,
+  title,
+  ariaLabel,
+  iconClass,
+}: {
+  disabled: boolean;
+  onClick: () => void;
+  isActive: boolean;
+  title: string;
+  ariaLabel: string;
+  iconClass: string;
+}): JSX.Element {
+  return (
+    <button
+      disabled={disabled}
+      onClick={onClick}
+      className={"toolbar-item spaced " + (isActive ? "active" : "")}
+      title={title}
+      type="button"
+      aria-label={ariaLabel}
+    >
+      <i className={"format " + iconClass} />
+    </button>
   );
 }
 
@@ -357,27 +370,19 @@ export default function ToolbarPlugin(): JSX.Element {
   const [blockType, setBlockType] =
     useState<keyof typeof blockTypeToBlockName>("paragraph");
   const [selectedElementKey, setSelectedElementKey] = useState<NodeKey | null>(
-    null
+    null,
   );
   const [fontSize, setFontSize] = useState<string>("15px");
-  const [fontColor, setFontColor] = useState<string>("#000");
-  const [bgColor, setBgColor] = useState<string>("#fff");
   const [fontFamily, setFontFamily] = useState<string>("Arial");
   const [isLink, setIsLink] = useState(false);
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
-  const [isStrikethrough, setIsStrikethrough] = useState(false);
-  const [isSubscript, setIsSubscript] = useState(false);
-  const [isSuperscript, setIsSuperscript] = useState(false);
   const [isCode, setIsCode] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
-  //   const [modal, showModal] = useModal();
-  const [isRTL, setIsRTL] = useState(false);
   const [codeLanguage, setCodeLanguage] = useState<string>("");
   const [isEditable, setIsEditable] = useState(() => editor.isEditable());
-  const IS_APPLE = false;
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -402,27 +407,19 @@ export default function ToolbarPlugin(): JSX.Element {
       setIsBold(selection.hasFormat("bold"));
       setIsItalic(selection.hasFormat("italic"));
       setIsUnderline(selection.hasFormat("underline"));
-      setIsStrikethrough(selection.hasFormat("strikethrough"));
-      setIsSubscript(selection.hasFormat("subscript"));
-      setIsSuperscript(selection.hasFormat("superscript"));
       setIsCode(selection.hasFormat("code"));
-      setIsRTL($isParentElementRTL(selection));
 
       // Update links
       const node = getSelectedNode(selection);
       const parent = node.getParent();
-      if ($isLinkNode(parent) || $isLinkNode(node)) {
-        setIsLink(true);
-      } else {
-        setIsLink(false);
-      }
+      setIsLink($isLinkNode(parent) || $isLinkNode(node));
 
       if (elementDOM !== null) {
         setSelectedElementKey(elementKey);
         if ($isListNode(element)) {
           const parentList = $getNearestNodeOfType<ListNode>(
             anchorNode,
-            ListNode
+            ListNode,
           );
           const type = parentList
             ? parentList.getListType()
@@ -439,7 +436,7 @@ export default function ToolbarPlugin(): JSX.Element {
             const language =
               element.getLanguage() as keyof typeof CODE_LANGUAGE_MAP;
             setCodeLanguage(
-              language ? CODE_LANGUAGE_MAP[language] || language : ""
+              language ? CODE_LANGUAGE_MAP[language] || language : "",
             );
             return;
           }
@@ -447,20 +444,10 @@ export default function ToolbarPlugin(): JSX.Element {
       }
       // Handle buttons
       setFontSize(
-        $getSelectionStyleValueForProperty(selection, "font-size", "15px")
-      );
-      setFontColor(
-        $getSelectionStyleValueForProperty(selection, "color", "#000")
-      );
-      setBgColor(
-        $getSelectionStyleValueForProperty(
-          selection,
-          "background-color",
-          "#fff"
-        )
+        $getSelectionStyleValueForProperty(selection, "font-size", "15px"),
       );
       setFontFamily(
-        $getSelectionStyleValueForProperty(selection, "font-family", "Arial")
+        $getSelectionStyleValueForProperty(selection, "font-family", "Arial"),
       );
     }
   }, [activeEditor]);
@@ -473,7 +460,7 @@ export default function ToolbarPlugin(): JSX.Element {
         setActiveEditor(newEditor);
         return false;
       },
-      COMMAND_PRIORITY_CRITICAL
+      COMMAND_PRIORITY_CRITICAL,
     );
   }, [editor, updateToolbar]);
 
@@ -493,7 +480,7 @@ export default function ToolbarPlugin(): JSX.Element {
           setCanUndo(payload);
           return false;
         },
-        COMMAND_PRIORITY_CRITICAL
+        COMMAND_PRIORITY_CRITICAL,
       ),
       activeEditor.registerCommand<boolean>(
         CAN_REDO_COMMAND,
@@ -501,8 +488,8 @@ export default function ToolbarPlugin(): JSX.Element {
           setCanRedo(payload);
           return false;
         },
-        COMMAND_PRIORITY_CRITICAL
-      )
+        COMMAND_PRIORITY_CRITICAL,
+      ),
     );
   }, [activeEditor, editor, updateToolbar]);
 
@@ -517,7 +504,7 @@ export default function ToolbarPlugin(): JSX.Element {
         }
       });
     },
-    [activeEditor, selectedElementKey]
+    [activeEditor, selectedElementKey],
   );
 
   const insertLink = useCallback(() => {
@@ -577,7 +564,7 @@ export default function ToolbarPlugin(): JSX.Element {
               return (
                 <DropDownItem
                   className={`item ${dropDownActiveClass(
-                    value === codeLanguage
+                    value === codeLanguage,
                   )}`}
                   onClick={() => onCodeLanguageSelect(value)}
                   key={value}
@@ -602,70 +589,54 @@ export default function ToolbarPlugin(): JSX.Element {
             value={fontSize}
             editor={editor}
           />
-          <button
+          <ToolbarButton
             disabled={!isEditable}
-            onClick={() => {
-              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
-            }}
-            className={"toolbar-item spaced " + (isBold ? "active" : "")}
+            onClick={() =>
+              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")
+            }
+            isActive={isBold}
             title={IS_APPLE ? "Bold (⌘B)" : "Bold (Ctrl+B)"}
-            type="button"
-            aria-label={`Format text as bold. Shortcut: ${
-              IS_APPLE ? "⌘B" : "Ctrl+B"
-            }`}
-          >
-            <i className="format bold" />
-          </button>
-          <button
+            ariaLabel={`Format text as bold. Shortcut: ${IS_APPLE ? "⌘B" : "Ctrl+B"}`}
+            iconClass="bold"
+          />
+          <ToolbarButton
             disabled={!isEditable}
-            onClick={() => {
-              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
-            }}
-            className={"toolbar-item spaced " + (isItalic ? "active" : "")}
+            onClick={() =>
+              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")
+            }
+            isActive={isItalic}
             title={IS_APPLE ? "Italic (⌘I)" : "Italic (Ctrl+I)"}
-            type="button"
-            aria-label={`Format text as italics. Shortcut: ${
-              IS_APPLE ? "⌘I" : "Ctrl+I"
-            }`}
-          >
-            <i className="format italic" />
-          </button>
-          <button
+            ariaLabel={`Format text as italics. Shortcut: ${IS_APPLE ? "⌘I" : "Ctrl+I"}`}
+            iconClass="italic"
+          />
+          <ToolbarButton
             disabled={!isEditable}
-            onClick={() => {
-              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
-            }}
-            className={"toolbar-item spaced " + (isUnderline ? "active" : "")}
+            onClick={() =>
+              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline")
+            }
+            isActive={isUnderline}
             title={IS_APPLE ? "Underline (⌘U)" : "Underline (Ctrl+U)"}
-            type="button"
-            aria-label={`Format text to underlined. Shortcut: ${
-              IS_APPLE ? "⌘U" : "Ctrl+U"
-            }`}
-          >
-            <i className="format underline" />
-          </button>
-          <button
+            ariaLabel={`Format text to underlined. Shortcut: ${IS_APPLE ? "⌘U" : "Ctrl+U"}`}
+            iconClass="underline"
+          />
+          <ToolbarButton
             disabled={!isEditable}
-            onClick={() => {
-              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "code");
-            }}
-            className={"toolbar-item spaced " + (isCode ? "active" : "")}
+            onClick={() =>
+              activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, "code")
+            }
+            isActive={isCode}
             title="Insert code block"
-            type="button"
-            aria-label="Insert code block"
-          >
-            <i className="format code" />
-          </button>
-          <button
+            ariaLabel="Insert code block"
+            iconClass="code"
+          />
+          <ToolbarButton
             disabled={!isEditable}
             onClick={insertLink}
-            className={"toolbar-item spaced " + (isLink ? "active" : "")}
-            aria-label="Insert link"
+            isActive={isLink}
             title="Insert link"
-            type="button"
-          >
-            <i className="format link" />
-          </button>
+            ariaLabel="Insert link"
+            iconClass="link"
+          />
           <Divider />
           <DropDown
             disabled={!isEditable}
@@ -674,42 +645,18 @@ export default function ToolbarPlugin(): JSX.Element {
             buttonClassName="toolbar-item spaced alignment"
             buttonAriaLabel="Formatting options for text alignment"
           >
-            <DropDownItem
-              onClick={() => {
-                activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left");
-              }}
-              className="item"
-            >
-              <i className="icon left-align" />
-              <span className="text">Left Align</span>
-            </DropDownItem>
-            <DropDownItem
-              onClick={() => {
-                activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center");
-              }}
-              className="item"
-            >
-              <i className="icon center-align" />
-              <span className="text">Center Align</span>
-            </DropDownItem>
-            <DropDownItem
-              onClick={() => {
-                activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right");
-              }}
-              className="item"
-            >
-              <i className="icon right-align" />
-              <span className="text">Right Align</span>
-            </DropDownItem>
-            <DropDownItem
-              onClick={() => {
-                activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "justify");
-              }}
-              className="item"
-            >
-              <i className="icon justify-align" />
-              <span className="text">Justify Align</span>
-            </DropDownItem>
+            {ALIGNMENT_OPTIONS.map(({ value, icon, label }) => (
+              <DropDownItem
+                key={value}
+                onClick={() =>
+                  activeEditor.dispatchCommand(FORMAT_ELEMENT_COMMAND, value)
+                }
+                className="item"
+              >
+                <i className={"icon " + icon} />
+                <span className="text">{label}</span>
+              </DropDownItem>
+            ))}
             <Divider />
           </DropDown>
         </>

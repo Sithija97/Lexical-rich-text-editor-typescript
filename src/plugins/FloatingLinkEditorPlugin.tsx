@@ -14,15 +14,13 @@ import {
   COMMAND_PRIORITY_CRITICAL,
   COMMAND_PRIORITY_HIGH,
   COMMAND_PRIORITY_LOW,
-  GridSelection,
+  BaseSelection,
   KEY_ESCAPE_COMMAND,
   LexicalEditor,
-  NodeSelection,
-  RangeSelection,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
 import { Dispatch, useCallback, useEffect, useRef, useState } from "react";
-import * as React from "react";
+import React from "react";
 import { createPortal } from "react-dom";
 
 import { getSelectedNode } from "../utils/getSelectedNode";
@@ -48,9 +46,9 @@ function FloatingLinkEditor({
   const inputRef = useRef<HTMLInputElement>(null);
   const [linkUrl, setLinkUrl] = useState("");
   const [editedLinkUrl, setEditedLinkUrl] = useState("https://");
-  const [lastSelection, setLastSelection] = useState<
-    RangeSelection | GridSelection | NodeSelection | null
-  >(null);
+  const [lastSelection, setLastSelection] = useState<BaseSelection | null>(
+    null,
+  );
 
   const updateLinkEditor = useCallback(() => {
     const selection = $getSelection();
@@ -140,7 +138,7 @@ function FloatingLinkEditor({
           updateLinkEditor();
           return true;
         },
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand(
         KEY_ESCAPE_COMMAND,
@@ -151,8 +149,8 @@ function FloatingLinkEditor({
           }
           return false;
         },
-        COMMAND_PRIORITY_HIGH
-      )
+        COMMAND_PRIORITY_HIGH,
+      ),
     );
   }, [editor, updateLinkEditor, setIsLink, isLink]);
 
@@ -168,24 +166,22 @@ function FloatingLinkEditor({
     }
   }, [isLinkEditMode, isLink]);
 
-  const monitorInputInteraction = (
-    event: React.KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      handleLinkSubmission();
-    } else if (event.key === "Escape") {
-      event.preventDefault();
-      setIsLinkEditMode(false);
-    }
-  };
-
   const handleLinkSubmission = () => {
     if (lastSelection !== null) {
       if (linkUrl !== "") {
         editor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl(editedLinkUrl));
       }
       setEditedLinkUrl("https://");
+      setIsLinkEditMode(false);
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleLinkSubmission();
+    } else if (event.key === "Escape") {
+      event.preventDefault();
       setIsLinkEditMode(false);
     }
   };
@@ -201,9 +197,7 @@ function FloatingLinkEditor({
             onChange={(event) => {
               setEditedLinkUrl(event.target.value);
             }}
-            onKeyDown={(event) => {
-              monitorInputInteraction(event);
-            }}
+            onKeyDown={handleKeyDown}
           />
           <div>
             <div
@@ -263,7 +257,7 @@ function useFloatingLinkEditorToolbar(
   editor: LexicalEditor,
   anchorElem: HTMLElement,
   isLinkEditMode: boolean,
-  setIsLinkEditMode: Dispatch<boolean>
+  setIsLinkEditMode: Dispatch<boolean>,
 ): JSX.Element | null {
   const [activeEditor, setActiveEditor] = useState(editor);
   const [isLink, setIsLink] = useState(false);
@@ -296,7 +290,7 @@ function useFloatingLinkEditorToolbar(
           setActiveEditor(newEditor);
           return false;
         },
-        COMMAND_PRIORITY_CRITICAL
+        COMMAND_PRIORITY_CRITICAL,
       ),
       editor.registerCommand(
         CLICK_COMMAND,
@@ -312,8 +306,8 @@ function useFloatingLinkEditorToolbar(
           }
           return false;
         },
-        COMMAND_PRIORITY_LOW
-      )
+        COMMAND_PRIORITY_LOW,
+      ),
     );
   }, [editor]);
 
@@ -326,7 +320,7 @@ function useFloatingLinkEditorToolbar(
       isLinkEditMode={isLinkEditMode}
       setIsLinkEditMode={setIsLinkEditMode}
     />,
-    anchorElem
+    anchorElem,
   );
 }
 
@@ -344,6 +338,6 @@ export default function FloatingLinkEditorPlugin({
     editor,
     anchorElem,
     isLinkEditMode,
-    setIsLinkEditMode
+    setIsLinkEditMode,
   );
 }
