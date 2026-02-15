@@ -6,7 +6,7 @@
  *
  */
 
-import {CAN_USE_DOM} from 'shared/canUseDOM';
+import { CAN_USE_DOM } from "./canUseDOM";
 
 declare global {
   interface Document {
@@ -19,7 +19,7 @@ declare global {
 }
 
 const documentMode =
-  CAN_USE_DOM && 'documentMode' in document ? document.documentMode : null;
+  CAN_USE_DOM && "documentMode" in document ? document.documentMode : null;
 
 export const IS_APPLE: boolean =
   CAN_USE_DOM && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
@@ -28,8 +28,8 @@ export const IS_FIREFOX: boolean =
   CAN_USE_DOM && /^(?!.*Seamonkey)(?=.*Firefox).*/i.test(navigator.userAgent);
 
 export const CAN_USE_BEFORE_INPUT: boolean =
-  CAN_USE_DOM && 'InputEvent' in window && !documentMode
-    ? 'getTargetRanges' in new window.InputEvent('input')
+  CAN_USE_DOM && "InputEvent" in window && !documentMode
+    ? "getTargetRanges" in new window.InputEvent("input")
     : false;
 
 export const IS_SAFARI: boolean =
