@@ -7,7 +7,7 @@
  */
 import type { Position } from "../nodes/InlineImageNode";
 
-import "../../nodes/InlineImageNode.css";
+import "../nodes/InlineImageNode.css";
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $wrapNodeInElement, mergeRegister } from "@lexical/utils";
@@ -31,6 +31,7 @@ import {
 } from "lexical";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
+import type { JSX } from "react";
 
 import {
   $createInlineImageNode,
@@ -183,29 +184,29 @@ export default function InlineImagePlugin(): JSX.Element | null {
 
           return true;
         },
-        COMMAND_PRIORITY_EDITOR
+        COMMAND_PRIORITY_EDITOR,
       ),
       editor.registerCommand<DragEvent>(
         DRAGSTART_COMMAND,
         (event) => {
           return onDragStart(event);
         },
-        COMMAND_PRIORITY_HIGH
+        COMMAND_PRIORITY_HIGH,
       ),
       editor.registerCommand<DragEvent>(
         DRAGOVER_COMMAND,
         (event) => {
           return onDragover(event);
         },
-        COMMAND_PRIORITY_LOW
+        COMMAND_PRIORITY_LOW,
       ),
       editor.registerCommand<DragEvent>(
         DROP_COMMAND,
         (event) => {
           return onDrop(event, editor);
         },
-        COMMAND_PRIORITY_HIGH
-      )
+        COMMAND_PRIORITY_HIGH,
+      ),
     );
   }, [editor]);
 
@@ -241,7 +242,7 @@ function onDragStart(event: DragEvent): boolean {
         width: node.__width,
       },
       type: "image",
-    })
+    }),
   );
 
   return true;
@@ -329,8 +330,8 @@ function getDragSelection(event: DragEvent): Range | null | undefined {
     target == null
       ? null
       : target.nodeType === 9
-      ? (target as Document).defaultView
-      : (target as Element).ownerDocument.defaultView;
+        ? (target as Document).defaultView
+        : (target as Element).ownerDocument.defaultView;
   const domSelection = getDOMSelection(targetWindow);
   if (document.caretRangeFromPoint) {
     range = document.caretRangeFromPoint(event.clientX, event.clientY);

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import type { JSX } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
   $createParagraphNode,
@@ -49,9 +50,17 @@ import {
   $getNearestNodeOfType,
   mergeRegister,
 } from "@lexical/utils";
+import { INSERT_HORIZONTAL_RULE_COMMAND } from "@lexical/react/LexicalHorizontalRuleNode";
 import DropDown, { DropDownItem } from "../ui/DropDown";
+import ColorPicker from "../ui/ColorPicker";
 import { getSelectedNode } from "../utils/getSelectedNode";
 import { sanitizeUrl } from "../utils/url";
+import useModal from "../hooks/useModal";
+import { InsertImageDialog } from "./ImagesPlugin";
+import { InsertInlineImageDialog } from "./InlineImagePlugin";
+import { InsertTableDialog } from "./TablePlugin";
+import { InsertPollDialog } from "./PollPlugin";
+import { INSERT_PAGE_BREAK } from "./PageBreakPlugin";
 
 const blockTypeToBlockName = {
   bullet: "Bulleted List",
@@ -320,6 +329,78 @@ function FontDropDown({
   );
 }
 
+function ColorPickerDropDown({
+  editor,
+  color,
+  styleProperty,
+  icon,
+  label,
+  disabled = false,
+}: {
+  editor: LexicalEditor;
+  color: string;
+  styleProperty: "color" | "background-color";
+  icon: string;
+  label: string;
+  disabled?: boolean;
+}): JSX.Element {
+  const handleChange = useCallback(
+    (value: string) => {
+      editor.update(() => {
+        const selection = $getSelection();
+        if ($isRangeSelection(selection)) {
+          $patchStyleText(selection, {
+            [styleProperty]: value,
+          });
+        }
+      });
+    },
+    [editor, styleProperty],
+  );
+
+  return (
+    <DropDown
+      disabled={disabled}
+      buttonClassName="toolbar-item spaced"
+      buttonIconClassName={"icon " + icon}
+      buttonAriaLabel={label}
+      stopCloseOnClickSelf={true}
+    >
+      <ColorPicker color={color} onChange={handleChange} />
+    </DropDown>
+  );
+}
+
+type InsertOption = {
+  label: string;
+  iconClass: string;
+  onSelect: () => void;
+};
+
+function InsertDropDown({
+  disabled = false,
+  options,
+}: {
+  disabled?: boolean;
+  options: InsertOption[];
+}): JSX.Element {
+  return (
+    <DropDown
+      disabled={disabled}
+      buttonClassName="toolbar-item spaced insert-dropdown"
+      buttonLabel="Insert"
+      buttonAriaLabel="Insert specialized editor node"
+    >
+      {options.map(({ label, iconClass, onSelect }) => (
+        <DropDownItem className="item" onClick={onSelect} key={label}>
+          <i className={"icon " + iconClass} />
+          <span className="text">{label}</span>
+        </DropDownItem>
+      ))}
+    </DropDown>
+  );
+}
+
 const IS_APPLE =
   typeof navigator !== "undefined" &&
   /Mac|iPod|iPhone|iPad/.test(navigator.platform);
@@ -374,6 +455,8 @@ export default function ToolbarPlugin(): JSX.Element {
   );
   const [fontSize, setFontSize] = useState<string>("15px");
   const [fontFamily, setFontFamily] = useState<string>("Arial");
+  const [fontColor, setFontColor] = useState<string>("#000000");
+  const [bgColor, setBgColor] = useState<string>("#ffffff");
   const [isLink, setIsLink] = useState(false);
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
@@ -449,6 +532,16 @@ export default function ToolbarPlugin(): JSX.Element {
       setFontFamily(
         $getSelectionStyleValueForProperty(selection, "font-family", "Arial"),
       );
+      setFontColor(
+        $getSelectionStyleValueForProperty(selection, "color", "#000000"),
+      );
+      setBgColor(
+        $getSelectionStyleValueForProperty(
+          selection,
+          "background-color",
+          "#ffffff",
+        ),
+      );
     }
   }, [activeEditor]);
 
@@ -514,6 +607,58 @@ export default function ToolbarPlugin(): JSX.Element {
       editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
     }
   }, [editor, isLink]);
+
+  const [modal, showModal] = useModal();
+
+  const insertOptions: InsertOption[] = [
+    {
+      label: "Horizontal Rule",
+      iconClass: "horizontal-rule",
+      onSelect: () =>
+        activeEditor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined),
+    },
+    {
+      label: "Page Break",
+      iconClass: "page-break",
+      onSelect: () =>
+        activeEditor.dispatchCommand(INSERT_PAGE_BREAK, undefined),
+    },
+    {
+      label: "Image",
+      iconClass: "image",
+      onSelect: () =>
+        showModal("Insert Image", (onClose) => (
+          <InsertImageDialog activeEditor={activeEditor} onClose={onClose} />
+        )),
+    },
+    {
+      label: "Inline Image",
+      iconClass: "image",
+      onSelect: () =>
+        showModal("Insert Inline Image", (onClose) => (
+          <InsertInlineImageDialog
+            activeEditor={activeEditor}
+            onClose={onClose}
+          />
+        )),
+    },
+    {
+      label: "Table",
+      iconClass: "table",
+      onSelect: () =>
+        showModal("Insert Table", (onClose) => (
+          <InsertTableDialog activeEditor={activeEditor} onClose={onClose} />
+        )),
+    },
+    {
+      label: "Poll",
+      iconClass: "poll",
+      onSelect: () =>
+        showModal("Insert Poll", (onClose) => (
+          <InsertPollDialog activeEditor={activeEditor} onClose={onClose} />
+        )),
+    },
+  ];
 
   return (
     <div className="toolbar">
@@ -637,6 +782,22 @@ export default function ToolbarPlugin(): JSX.Element {
             ariaLabel="Insert link"
             iconClass="link"
           />
+          <ColorPickerDropDown
+            disabled={!isEditable}
+            editor={activeEditor}
+            color={fontColor}
+            styleProperty="color"
+            icon="font-color"
+            label="Formatting options for text color"
+          />
+          <ColorPickerDropDown
+            disabled={!isEditable}
+            editor={activeEditor}
+            color={bgColor}
+            styleProperty="background-color"
+            icon="bg-color"
+            label="Formatting options for background color"
+          />
           <Divider />
           <DropDown
             disabled={!isEditable}
@@ -659,8 +820,11 @@ export default function ToolbarPlugin(): JSX.Element {
             ))}
             <Divider />
           </DropDown>
+          <Divider />
+          <InsertDropDown disabled={!isEditable} options={insertOptions} />
         </>
       )}
+      {modal}
     </div>
   );
 }

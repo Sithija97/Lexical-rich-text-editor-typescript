@@ -10,17 +10,18 @@ import type { LexicalEditor } from "lexical";
 
 import * as React from "react";
 import { MutableRefObject } from "react";
+import type { JSX } from "react";
 
 // TODO: Implement ImageResizer
 export default function ImageResizer({
-  buttonRef,
-  showCaption,
-  setShowCaption,
-  imageRef,
-  editor,
-  onResizeStart,
-  onResizeEnd,
-  captionsEnabled,
+  buttonRef: _buttonRef,
+  showCaption: _showCaption,
+  setShowCaption: _setShowCaption,
+  imageRef: _imageRef,
+  editor: _editor,
+  onResizeStart: _onResizeStart,
+  onResizeEnd: _onResizeEnd,
+  captionsEnabled: _captionsEnabled,
 }: {
   buttonRef: MutableRefObject<HTMLButtonElement | null>;
   showCaption: boolean;

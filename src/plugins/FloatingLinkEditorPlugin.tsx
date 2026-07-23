@@ -21,6 +21,7 @@ import {
 } from "lexical";
 import { Dispatch, useCallback, useEffect, useRef, useState } from "react";
 import React from "react";
+import type { JSX } from "react";
 import { createPortal } from "react-dom";
 
 import { getSelectedNode } from "../utils/getSelectedNode";

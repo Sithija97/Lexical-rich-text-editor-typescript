@@ -10,6 +10,7 @@ import type { LexicalEditor, NodeKey } from "lexical";
 import type { Position } from "./InlineImageNode";
 
 import * as React from "react";
+import type { JSX } from "react";
 
 // TODO: Implement InlineImageComponent
 export default function InlineImageComponent({
@@ -17,10 +18,10 @@ export default function InlineImageComponent({
   altText,
   width,
   height,
-  nodeKey,
-  showCaption,
-  caption,
-  position,
+  nodeKey: _nodeKey,
+  showCaption: _showCaption,
+  caption: _caption,
+  position: _position,
 }: {
   src: string;
   altText: string;

@@ -9,6 +9,7 @@
 import type { LexicalEditor, NodeKey } from "lexical";
 
 import * as React from "react";
+import type { JSX } from "react";
 
 // TODO: Implement ImageComponent
 export default function ImageComponent({
@@ -17,11 +18,11 @@ export default function ImageComponent({
   width,
   height,
   maxWidth,
-  nodeKey,
-  showCaption,
-  caption,
-  captionsEnabled,
-  resizable,
+  nodeKey: _nodeKey,
+  showCaption: _showCaption,
+  caption: _caption,
+  captionsEnabled: _captionsEnabled,
+  resizable: _resizable,
 }: {
   src: string;
   altText: string;

@@ -6,23 +6,30 @@
  *
  */
 
-import './ExcalidrawModal.css';
+import "./ExcalidrawModal.css";
 
-import {Excalidraw} from '@excalidraw/excalidraw';
+import { Excalidraw } from "@excalidraw/excalidraw";
 import {
   AppState,
   BinaryFiles,
   ExcalidrawImperativeAPI,
   ExcalidrawInitialDataState,
-} from '@excalidraw/excalidraw/types/types';
-import * as React from 'react';
-import {ReactPortal, useEffect, useLayoutEffect, useRef, useState} from 'react';
-import {createPortal} from 'react-dom';
+} from "@excalidraw/excalidraw/types/types";
+import * as React from "react";
+import {
+  ReactPortal,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import type { JSX } from "react";
+import { createPortal } from "react-dom";
 
-import Button from '../../ui/Button';
-import Modal from '../../ui/Modal';
+import Button from "../../ui/Button";
+import Modal from "../../ui/Modal";
 
-export type ExcalidrawInitialElements = ExcalidrawInitialDataState['elements'];
+export type ExcalidrawInitialElements = ExcalidrawInitialDataState["elements"];
 
 type Props = {
   closeOnClickOutside?: boolean;
@@ -115,13 +122,13 @@ export default function ExcalidrawModal({
     if (excaliDrawModelRef.current !== null) {
       modalOverlayElement = excaliDrawModelRef.current?.parentElement;
       if (modalOverlayElement !== null) {
-        modalOverlayElement?.addEventListener('click', clickOutsideHandler);
+        modalOverlayElement?.addEventListener("click", clickOutsideHandler);
       }
     }
 
     return () => {
       if (modalOverlayElement !== null) {
-        modalOverlayElement?.removeEventListener('click', clickOutsideHandler);
+        modalOverlayElement?.removeEventListener("click", clickOutsideHandler);
       }
     };
   }, [closeOnClickOutside, onDelete]);
@@ -130,18 +137,18 @@ export default function ExcalidrawModal({
     const currentModalRef = excaliDrawModelRef.current;
 
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         onDelete();
       }
     };
 
     if (currentModalRef !== null) {
-      currentModalRef.addEventListener('keydown', onKeyDown);
+      currentModalRef.addEventListener("keydown", onKeyDown);
     }
 
     return () => {
       if (currentModalRef !== null) {
-        currentModalRef.removeEventListener('keydown', onKeyDown);
+        currentModalRef.removeEventListener("keydown", onKeyDown);
       }
     };
   }, [elements, files, onDelete]);
@@ -153,7 +160,7 @@ export default function ExcalidrawModal({
       const partialState: Partial<AppState> = {
         exportBackground: appState?.exportBackground,
         exportScale: appState?.exportScale,
-        exportWithDarkMode: appState?.theme === 'dark',
+        exportWithDarkMode: appState?.theme === "dark",
         isBindingEnabled: appState?.isBindingEnabled,
         isLoading: appState?.isLoading,
         name: appState?.name,
@@ -187,20 +194,23 @@ export default function ExcalidrawModal({
         onClose={() => {
           setDiscardModalOpen(false);
         }}
-        closeOnClickOutside={false}>
+        closeOnClickOutside={false}
+      >
         Are you sure you want to discard the changes?
         <div className="ExcalidrawModal__discardModal">
           <Button
             onClick={() => {
               setDiscardModalOpen(false);
               onClose();
-            }}>
+            }}
+          >
             Discard
-          </Button>{' '}
+          </Button>{" "}
           <Button
             onClick={() => {
               setDiscardModalOpen(false);
-            }}>
+            }}
+          >
             Cancel
           </Button>
         </div>
@@ -226,14 +236,15 @@ export default function ExcalidrawModal({
       <div
         className="ExcalidrawModal__modal"
         ref={excaliDrawModelRef}
-        tabIndex={-1}>
+        tabIndex={-1}
+      >
         <div className="ExcalidrawModal__row">
           {discardModalOpen && <ShowDiscardDialog />}
           <Excalidraw
             onChange={onChange}
             excalidrawAPI={excalidrawAPIRefCallback}
             initialData={{
-              appState: initialAppState || {isLoading: false},
+              appState: initialAppState || { isLoading: false },
               elements: initialElements,
               files: initialFiles,
             }}

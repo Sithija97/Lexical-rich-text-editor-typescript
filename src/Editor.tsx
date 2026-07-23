@@ -9,6 +9,8 @@ import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
+import { HorizontalRulePlugin } from "@lexical/react/LexicalHorizontalRulePlugin";
+import { HorizontalRuleNode } from "@lexical/react/LexicalHorizontalRuleNode";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import { ListItemNode, ListNode } from "@lexical/list";
@@ -17,6 +19,15 @@ import { AutoLinkNode, LinkNode } from "@lexical/link";
 import ToolbarPlugin from "./plugins/ToolbarPlugin";
 import AutoLinkPlugin from "./plugins/AutoLinkPlugin";
 import FloatingLinkEditorPlugin from "./plugins/FloatingLinkEditorPlugin";
+import { TablePlugin } from "@lexical/react/LexicalTablePlugin";
+import ImagesPlugin from "./plugins/ImagesPlugin";
+import InlineImagePlugin from "./plugins/InlineImagePlugin";
+import PollPlugin from "./plugins/PollPlugin";
+import PageBreakPlugin from "./plugins/PageBreakPlugin";
+import { ImageNode } from "./nodes/ImageNode";
+import { InlineImageNode } from "./nodes/InlineImageNode";
+import { PollNode } from "./nodes/PollNode";
+import { PageBreakNode } from "./nodes/PageBreakNode";
 
 function Placeholder() {
   return <div className="editor-placeholder">Enter some rich text...</div>;
@@ -27,7 +38,7 @@ const editorConfig = {
   // The editor theme
   theme: ExampleTheme,
   // Handling of errors during update
-  onError(error: any) {
+  onError(error: Error) {
     throw error;
   },
   // Any custom nodes go here
@@ -43,6 +54,11 @@ const editorConfig = {
     TableRowNode,
     AutoLinkNode,
     LinkNode,
+    HorizontalRuleNode,
+    ImageNode,
+    InlineImageNode,
+    PollNode,
+    PageBreakNode,
   ],
 };
 
@@ -85,6 +101,12 @@ const Editor = () => {
           )}
           <ListPlugin />
           <LinkPlugin />
+          <HorizontalRulePlugin />
+          <TablePlugin />
+          <ImagesPlugin />
+          <InlineImagePlugin />
+          <PollPlugin />
+          <PageBreakPlugin />
         </div>
       </div>
     </LexicalComposer>

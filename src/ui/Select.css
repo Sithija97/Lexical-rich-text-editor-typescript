@@ -16,8 +16,8 @@ select {
 }
 
 :root {
-  --select-border: #393939;
-  --select-focus: #101484;
+  --select-border: var(--color-border, #393939);
+  --select-focus: var(--color-link, #101484);
   --select-arrow: var(--select-border);
 }
 
@@ -30,5 +30,6 @@ select {
   font-size: 1rem;
   cursor: pointer;
   line-height: 1.4;
-  background: linear-gradient(to bottom, #ffffff 0%, #e5e5e5 100%);
+  background: var(--color-input-bg, #fff);
+  color: var(--color-text, #000);
 }

@@ -58,7 +58,7 @@
 
 .InlineImageNode_Checkbox:checked + label:before,
 .InlineImageNode_Checkbox:not(:checked) + label:before {
-  content: '';
+  content: "";
   position: absolute;
   right: 0;
   top: 0;
@@ -70,7 +70,7 @@
 
 .InlineImageNode_Checkbox:checked + label:after,
 .InlineImageNode_Checkbox:not(:checked) + label:after {
-  content: '';
+  content: "";
   width: 8px;
   height: 8px;
   background: #222222;

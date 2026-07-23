@@ -1,10 +1,30 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/lexical-logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lexical + React + TS</title>
+    <meta
+      name="description"
+      content="Lexical Example — a React + TypeScript rich text editor built on Meta's Lexical framework."
+    />
+    <title>Lexical Example</title>
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("lexical-example-theme");
+          var theme =
+            stored === "light" || stored === "dark"
+              ? stored
+              : window.matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch (e) {
+          // localStorage/matchMedia unavailable — fall back to the default light theme.
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

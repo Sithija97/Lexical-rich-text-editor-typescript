@@ -92,7 +92,7 @@
   background-color: rgb(61, 135, 245);
 }
 .PollNode__optionCheckboxChecked:after {
-  content: '';
+  content: "";
   cursor: pointer;
   border-color: #fff;
   border-style: solid;
@@ -134,7 +134,7 @@
 .PollNode__optionDelete:after {
   position: absolute;
   display: block;
-  content: '';
+  content: "";
   background-color: #999;
   width: 2px;
   height: 15px;

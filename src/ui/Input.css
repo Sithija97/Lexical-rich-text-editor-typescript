@@ -1,0 +1,27 @@
+.Input__wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.Input__label {
+  font-size: 13px;
+  color: var(--color-text-secondary, #777);
+  margin-bottom: 4px;
+  text-align: left;
+}
+
+.Input__input {
+  padding: 8px 12px;
+  border: 1px solid var(--color-border, #ccc);
+  border-radius: 6px;
+  background-color: var(--color-input-bg, #fff);
+  color: var(--color-text, #050505);
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.Input__input:focus {
+  outline: 2px solid var(--color-link, rgb(33, 111, 219));
+  outline-offset: -1px;
+}

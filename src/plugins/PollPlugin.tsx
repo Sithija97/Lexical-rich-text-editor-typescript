@@ -19,6 +19,7 @@ import {
 } from "lexical";
 import { useEffect, useState } from "react";
 import * as React from "react";
+import type { JSX } from "react";
 
 import { $createPollNode, createPollOption, PollNode } from "../nodes/PollNode";
 import Button from "../ui/Button";
@@ -26,7 +27,7 @@ import { DialogActions } from "../ui/Dialog";
 import TextInput from "../ui/TextInput";
 
 export const INSERT_POLL_COMMAND: LexicalCommand<string> = createCommand(
-  "INSERT_POLL_COMMAND"
+  "INSERT_POLL_COMMAND",
 );
 
 export function InsertPollDialog({
@@ -76,7 +77,7 @@ export default function PollPlugin(): JSX.Element | null {
 
         return true;
       },
-      COMMAND_PRIORITY_EDITOR
+      COMMAND_PRIORITY_EDITOR,
     );
   }, [editor]);
   return null;

@@ -6,8 +6,9 @@
  *
  */
 
-import * as React from 'react';
-import {useMemo} from 'react';
+import * as React from "react";
+import { useId } from "react";
+import type { JSX } from "react";
 
 export default function Switch({
   checked,
@@ -20,7 +21,7 @@ export default function Switch({
   onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   text: string;
 }>): JSX.Element {
-  const buttonId = useMemo(() => 'id_' + Math.floor(Math.random() * 10000), []);
+  const buttonId = useId();
   return (
     <div className="switch" id={id}>
       <label htmlFor={buttonId}>{text}</label>
@@ -28,7 +29,8 @@ export default function Switch({
         role="switch"
         aria-checked={checked}
         id={buttonId}
-        onClick={onClick}>
+        onClick={onClick}
+      >
         <span />
       </button>
     </div>

@@ -20,7 +20,7 @@ import { useEffect } from "react";
 import { $createExcalidrawNode, ExcalidrawNode } from "../nodes/ExcalidrawNode";
 
 export const INSERT_EXCALIDRAW_COMMAND: LexicalCommand<void> = createCommand(
-  "INSERT_EXCALIDRAW_COMMAND"
+  "INSERT_EXCALIDRAW_COMMAND",
 );
 
 export default function ExcalidrawPlugin(): null {
@@ -28,7 +28,7 @@ export default function ExcalidrawPlugin(): null {
   useEffect(() => {
     if (!editor.hasNodes([ExcalidrawNode])) {
       throw new Error(
-        "ExcalidrawPlugin: ExcalidrawNode not registered on editor"
+        "ExcalidrawPlugin: ExcalidrawNode not registered on editor",
       );
     }
 
@@ -44,7 +44,7 @@ export default function ExcalidrawPlugin(): null {
 
         return true;
       },
-      COMMAND_PRIORITY_EDITOR
+      COMMAND_PRIORITY_EDITOR,
     );
   }, [editor]);
 

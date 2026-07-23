@@ -1,11 +1,61 @@
+@import "./plugins/index.css";
+
+:root {
+  --color-bg: #eee;
+  --color-surface: #fff;
+  --color-surface-hover: #eee;
+  --color-border: #eee;
+  --color-text: #333;
+  --color-text-secondary: #777;
+  --color-text-muted: #999;
+  --color-heading: rgb(5, 5, 5);
+  --color-placeholder: #999;
+  --color-link: rgb(33, 111, 219);
+  --color-code-bg: rgb(240, 242, 245);
+  --color-code-border: #ccc;
+  --color-accent: rgb(223, 232, 250);
+  --color-accent-soft: rgba(223, 232, 250, 0.3);
+  --color-shadow: rgba(0, 0, 0, 0.2);
+  --color-input-bg: #eee;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #14161a;
+  --color-surface: #1e2126;
+  --color-surface-hover: #2a2e35;
+  --color-border: #2f333b;
+  --color-text: #e4e6eb;
+  --color-text-secondary: #b0b4bb;
+  --color-text-muted: #8a8f98;
+  --color-heading: #f2f3f5;
+  --color-placeholder: #7c828d;
+  --color-link: #76b6ff;
+  --color-code-bg: #262a31;
+  --color-code-border: #3a3f47;
+  --color-accent: #33415c;
+  --color-accent-soft: rgba(118, 182, 255, 0.18);
+  --color-shadow: rgba(0, 0, 0, 0.5);
+  --color-input-bg: #262a31;
+  color-scheme: dark;
+}
+
 body {
   margin: 0;
-  background: #eee;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, ".SFNSText-Regular",
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    ".SFNSText-Regular",
     sans-serif;
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .other h2 {
@@ -31,9 +81,59 @@ body {
   text-align: center;
 }
 
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 28px 4px 12px;
+  gap: 12px;
+}
+
+.app-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+
+.lexical-logo {
+  flex-shrink: 0;
+  color: var(--color-heading);
+}
+
+.app-header-text h1 {
+  margin: 0;
+}
+
+.app-header-text p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-heading);
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  background: var(--color-surface-hover);
+}
+
 h1 {
   font-size: 24px;
-  color: #333;
+  color: var(--color-heading);
 }
 
 .ltr {
@@ -47,8 +147,8 @@ h1 {
 .editor-container {
   margin: 20px auto 20px auto;
   border-radius: 2px;
-  max-width: 780px;
-  color: #000;
+  max-width: 1000px;
+  color: var(--color-text);
   position: relative;
   line-height: 20px;
   font-weight: 400;
@@ -58,8 +158,9 @@ h1 {
 }
 
 .editor-inner {
-  width: 788px;
-  background: #fff;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--color-surface);
   position: relative;
 }
 
@@ -67,16 +168,15 @@ h1 {
   min-height: 150px;
   resize: none;
   font-size: 15px;
-  caret-color: rgb(5, 5, 5);
   position: relative;
   tab-size: 1;
   outline: 0;
   padding: 15px 10px;
-  caret-color: #444;
+  caret-color: var(--color-heading);
 }
 
 .editor-placeholder {
-  color: #999;
+  color: var(--color-placeholder);
   overflow: hidden;
   position: absolute;
   text-overflow: ellipsis;
@@ -109,14 +209,14 @@ h1 {
 }
 
 .editor-text-code {
-  background-color: rgb(240, 242, 245);
+  background-color: var(--color-code-bg);
   padding: 1px 0.25rem;
   font-family: Menlo, Consolas, Monaco, monospace;
   font-size: 94%;
 }
 
 .editor-link {
-  color: rgb(33, 111, 219);
+  color: var(--color-link);
   text-decoration: underline;
   cursor: pointer;
 }
@@ -138,7 +238,7 @@ h1 {
 }
 
 .editor-code {
-  background-color: rgb(240, 242, 245);
+  background-color: var(--color-code-bg);
   font-family: Menlo, Consolas, Monaco, monospace;
   display: block;
   padding: 8px 8px 8px 52px;
@@ -156,12 +256,12 @@ h1 {
 .editor-code:before {
   content: attr(data-gutter);
   position: absolute;
-  background-color: #eee;
+  background-color: var(--color-bg);
   left: 0;
   top: 0;
-  border-right: 1px solid #ccc;
+  border-right: 1px solid var(--color-code-border);
   padding: 8px;
-  color: #777;
+  color: var(--color-text-secondary);
   white-space: pre-wrap;
   text-align: right;
   min-width: 25px;
@@ -174,7 +274,7 @@ h1 {
   font-size: 10px;
   text-transform: uppercase;
   position: absolute;
-  color: rgba(0, 0, 0, 0.5);
+  color: var(--color-text-secondary);
 }
 
 .editor-tokenComment {
@@ -221,7 +321,7 @@ h1 {
 
 .editor-heading-h1 {
   font-size: 24px;
-  color: rgb(5, 5, 5);
+  color: var(--color-heading);
   font-weight: 400;
   margin: 0;
   margin-bottom: 12px;
@@ -230,7 +330,7 @@ h1 {
 
 .editor-heading-h2 {
   font-size: 15px;
-  color: rgb(101, 103, 107);
+  color: var(--color-text-secondary);
   font-weight: 700;
   margin: 0;
   margin-top: 10px;
@@ -242,11 +342,45 @@ h1 {
   margin: 0;
   margin-left: 20px;
   font-size: 15px;
-  color: rgb(101, 103, 107);
-  border-left-color: rgb(206, 208, 212);
+  color: var(--color-text-secondary);
+  border-left-color: var(--color-border);
   border-left-width: 4px;
   border-left-style: solid;
   padding-left: 16px;
+}
+
+.editor-table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: fixed;
+  width: fit-content;
+  max-width: 100%;
+  margin: 16px 0;
+}
+
+.editor-table-cell {
+  border: 1px solid var(--color-code-border);
+  width: 75px;
+  vertical-align: top;
+  text-align: start;
+  padding: 6px 8px;
+  position: relative;
+  outline: none;
+  overflow: auto;
+}
+
+.editor-table-cell-header {
+  background-color: var(--color-surface-hover);
+  text-align: start;
+  font-weight: 600;
+}
+
+.editor-table-cell-selected {
+  caret-color: transparent;
+}
+
+[contenteditable]:focus-within .editor-table-selected {
+  outline: 2px solid var(--color-link);
 }
 
 .editor-list-ol {
@@ -336,7 +470,7 @@ pre::-webkit-scrollbar-thumb {
   background-color: rgba(150, 150, 150, 0.4);
 }
 
-.emoji-inner::moz-selection {
+.emoji-inner:-moz-selection {
   color: transparent;
   background-color: rgba(150, 150, 150, 0.4);
 }
@@ -347,10 +481,13 @@ pre::-webkit-scrollbar-thumb {
 
 .toolbar {
   display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
   margin-bottom: 1px;
-  background: hsl(0, 0%, 100%);
+  background: var(--color-surface);
   padding: 4px;
-  width: 780px;
+  width: 100%;
+  box-sizing: border-box;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   vertical-align: middle;
@@ -390,7 +527,7 @@ pre::-webkit-scrollbar-thumb {
 }
 
 .toolbar button.toolbar-item.active {
-  background-color: rgba(223, 232, 250, 0.3);
+  background-color: var(--color-accent-soft);
 }
 
 .toolbar button.toolbar-item.active i {
@@ -398,12 +535,12 @@ pre::-webkit-scrollbar-thumb {
 }
 
 .toolbar .toolbar-item:hover:not([disabled]) {
-  background-color: #eee;
+  background-color: var(--color-surface-hover);
 }
 
 .toolbar .divider {
   width: 1px;
-  background-color: #eee;
+  background-color: var(--color-border);
   margin: 0 4px;
 }
 
@@ -418,7 +555,7 @@ pre::-webkit-scrollbar-thumb {
   -moz-appearance: none;
   width: 70px;
   font-size: 14px;
-  color: #777;
+  color: var(--color-text-secondary);
   text-overflow: ellipsis;
 }
 
@@ -433,12 +570,25 @@ pre::-webkit-scrollbar-thumb {
   width: 200px;
   vertical-align: middle;
   font-size: 14px;
-  color: #777;
+  color: var(--color-text-secondary);
   text-overflow: ellipsis;
   width: 70px;
   overflow: hidden;
   height: 20px;
   text-align: left;
+}
+
+/* "Align" and "Insert" are short, fixed labels — don't reserve the same
+   70px other dropdowns need for longer content (font names, block types). */
+.toolbar-item.alignment .text,
+.toolbar-item.insert-dropdown .text {
+  width: auto;
+  white-space: nowrap;
+}
+
+.toolbar-item.alignment .chevron-down,
+.toolbar-item.insert-dropdown .chevron-down {
+  margin-left: 4px;
 }
 
 .toolbar .toolbar-item .icon {
@@ -479,7 +629,7 @@ i.chevron-down {
 }
 
 #block-controls button:hover {
-  background-color: #efefef;
+  background-color: var(--color-surface-hover);
 }
 
 #block-controls button:focus-visible {
@@ -526,18 +676,21 @@ i.chevron-down {
   z-index: 5;
   display: block;
   position: absolute;
-  box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 12px 28px 0 var(--color-shadow),
+    0 2px 4px 0 var(--color-shadow),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   min-width: 100px;
   min-height: 40px;
-  background-color: #fff;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
 }
 
 .dropdown .item {
   margin: 0 8px 0 8px;
   padding: 8px;
-  color: #050505;
+  color: var(--color-text);
   cursor: pointer;
   line-height: 16px;
   font-size: 15px;
@@ -546,7 +699,7 @@ i.chevron-down {
   flex-direction: row;
   flex-shrink: 0;
   justify-content: space-between;
-  background-color: #fff;
+  background-color: var(--color-surface);
   border-radius: 8px;
   border: 0;
   min-width: 268px;
@@ -568,7 +721,7 @@ i.chevron-down {
 }
 
 .dropdown .item:hover {
-  background-color: #eee;
+  background-color: var(--color-surface-hover);
 }
 
 .dropdown .item .text {
@@ -668,9 +821,47 @@ i.justify-align {
   background-image: url(./images/icons/justify.svg);
 }
 
+.icon.font-color {
+  background-image: url(./images/icons/font-color.svg);
+}
+
+.icon.bg-color {
+  background-image: url(./images/icons/bg-color.svg);
+}
+
+.icon.horizontal-rule {
+  background-image: url(./images/icons/hr.svg);
+}
+
+.icon.page-break {
+  background-image: url(./images/icons/file-break.svg);
+}
+
+.icon.image {
+  background-image: url(./images/icons/image.svg);
+}
+
+.icon.table {
+  background-image: url(./images/icons/table.svg);
+}
+
+.icon.poll {
+  background-image: url(./images/icons/ui-checks.svg);
+}
+
+.font-color-item .color-swatch,
+.bg-color-item .color-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid var(--color-border);
+  margin-right: 12px;
+}
+
 .link-editor .button.active,
 .toolbar .button.active {
-  background-color: rgb(223, 232, 250);
+  background-color: var(--color-accent);
 }
 
 .link-editor .link-input {
@@ -680,9 +871,9 @@ i.justify-align {
   margin: 12px 12px;
   padding: 8px 12px;
   border-radius: 15px;
-  background-color: #eee;
+  background-color: var(--color-input-bg);
   font-size: 15px;
-  color: rgb(5, 5, 5);
+  color: var(--color-heading);
   border: 0;
   outline: 0;
   position: relative;
@@ -696,7 +887,7 @@ i.justify-align {
   padding: 8px 12px;
   border-radius: 15px;
   font-size: 15px;
-  color: rgb(5, 5, 5);
+  color: var(--color-heading);
   border: 0;
   outline: 0;
   position: relative;
@@ -768,7 +959,7 @@ i.justify-align {
 }
 
 .link-editor .link-input a {
-  color: rgb(33, 111, 219);
+  color: var(--color-link);
   text-decoration: underline;
   white-space: nowrap;
   overflow: hidden;
@@ -789,6 +980,23 @@ i.justify-align {
 .link-editor select {
   padding: 6px;
   border: none;
-  background-color: rgba(0, 0, 0, 0.075);
+  background-color: var(--color-input-bg);
   border-radius: 4px;
+  color: var(--color-text);
+}
+
+/* The toolbar/dropdown icon set is authored as single-color (black) SVGs used
+   via background-image, so `currentColor` doesn't reach them. Invert them in
+   dark mode instead of re-authoring every asset. */
+:root[data-theme="dark"] i.format,
+:root[data-theme="dark"] i.chevron-down,
+:root[data-theme="dark"] i.undo,
+:root[data-theme="dark"] i.redo,
+:root[data-theme="dark"] .icon,
+:root[data-theme="dark"] #block-controls span.block-type,
+:root[data-theme="dark"] .link-editor div.link-edit,
+:root[data-theme="dark"] .link-editor div.link-trash,
+:root[data-theme="dark"] .link-editor div.link-cancel,
+:root[data-theme="dark"] .link-editor div.link-confirm {
+  filter: invert(0.88);
 }

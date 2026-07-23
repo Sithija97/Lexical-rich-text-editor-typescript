@@ -15,10 +15,11 @@ import {
   useState,
 } from "react";
 import * as React from "react";
+import type { JSX } from "react";
 import { createPortal } from "react-dom";
 
 type DropDownContextType = {
-  registerItem: (ref: React.RefObject<HTMLButtonElement>) => void;
+  registerItem: (ref: React.RefObject<HTMLButtonElement | null>) => void;
 };
 
 const DropDownContext = React.createContext<DropDownContextType | null>(null);
@@ -72,16 +73,21 @@ function DropDownItems({
   dropDownRef: React.Ref<HTMLDivElement>;
   onClose: () => void;
 }) {
-  const [items, setItems] = useState<React.RefObject<HTMLButtonElement>[]>();
+  const [items, setItems] =
+    useState<React.RefObject<HTMLButtonElement | null>[]>();
   const [highlightedItem, setHighlightedItem] =
-    useState<React.RefObject<HTMLButtonElement>>();
+    useState<React.RefObject<HTMLButtonElement | null>>();
 
   const registerItem = useCallback(
-    (itemRef: React.RefObject<HTMLButtonElement>) => {
+    (itemRef: React.RefObject<HTMLButtonElement | null>) => {
       setItems((prev) => (prev ? [...prev, itemRef] : [itemRef]));
     },
-    [setItems]
+    [setItems],
   );
+
+  // Derived during render rather than mirrored into state via an effect:
+  // avoids the extra render pass an effect-driven setState would cause.
+  const effectiveHighlightedItem = highlightedItem ?? items?.[0];
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (!items) return;
@@ -96,14 +102,14 @@ function DropDownItems({
       onClose();
     } else if (key === "ArrowUp") {
       setHighlightedItem((prev) => {
-        if (!prev) return items[0];
-        const index = items.indexOf(prev) - 1;
+        const current = prev ?? items[0];
+        const index = items.indexOf(current) - 1;
         return items[index === -1 ? items.length - 1 : index];
       });
     } else if (key === "ArrowDown") {
       setHighlightedItem((prev) => {
-        if (!prev) return items[0];
-        return items[items.indexOf(prev) + 1];
+        const current = prev ?? items[0];
+        return items[items.indexOf(current) + 1];
       });
     }
   };
@@ -112,18 +118,14 @@ function DropDownItems({
     () => ({
       registerItem,
     }),
-    [registerItem]
+    [registerItem],
   );
 
   useEffect(() => {
-    if (items && !highlightedItem) {
-      setHighlightedItem(items[0]);
+    if (effectiveHighlightedItem && effectiveHighlightedItem.current) {
+      effectiveHighlightedItem.current.focus();
     }
-
-    if (highlightedItem && highlightedItem.current) {
-      highlightedItem.current.focus();
-    }
-  }, [items, highlightedItem]);
+  }, [effectiveHighlightedItem]);
 
   return (
     <DropDownContext.Provider value={contextValue}>
@@ -171,7 +173,7 @@ export default function DropDown({
       dropDown.style.top = `${top + 40}px`;
       dropDown.style.left = `${Math.min(
         left,
-        window.innerWidth - dropDown.offsetWidth - 20
+        window.innerWidth - dropDown.offsetWidth - 20,
       )}px`;
     }
   }, [dropDownRef, buttonRef, showDropDown]);
@@ -206,6 +208,7 @@ export default function DropDown({
       <button
         disabled={disabled}
         aria-label={buttonAriaLabel || buttonLabel}
+        title={buttonAriaLabel || buttonLabel}
         className={buttonClassName}
         onClick={() => setShowDropDown(!showDropDown)}
         ref={buttonRef}
@@ -222,7 +225,7 @@ export default function DropDown({
           <DropDownItems dropDownRef={dropDownRef} onClose={handleClose}>
             {children}
           </DropDownItems>,
-          document.body
+          document.body,
         )}
     </>
   );

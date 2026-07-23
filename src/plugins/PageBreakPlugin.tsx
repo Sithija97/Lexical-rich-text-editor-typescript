@@ -15,6 +15,7 @@ import {
   LexicalCommand,
 } from "lexical";
 import { useEffect } from "react";
+import type { JSX } from "react";
 import { $createPageBreakNode, PageBreakNode } from "../nodes/PageBreakNode";
 
 export const INSERT_PAGE_BREAK: LexicalCommand<undefined> = createCommand();
@@ -25,7 +26,7 @@ export default function PageBreakPlugin(): JSX.Element | null {
   useEffect(() => {
     if (!editor.hasNodes([PageBreakNode])) {
       throw new Error(
-        "PageBreakPlugin: PageBreakNode is not registered on editor"
+        "PageBreakPlugin: PageBreakNode is not registered on editor",
       );
     }
 
@@ -47,8 +48,8 @@ export default function PageBreakPlugin(): JSX.Element | null {
 
           return true;
         },
-        COMMAND_PRIORITY_EDITOR
-      )
+        COMMAND_PRIORITY_EDITOR,
+      ),
     );
   }, [editor]);
 
